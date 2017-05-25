@@ -2,13 +2,13 @@
 
 namespace yiicod\socketio\commands;
 
-use yiicod\socketio\Broadcast;
 use Symfony\Component\Process\Process;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Console;
 use yii\helpers\Json;
 use yiicod\cron\commands\DaemonController;
+use yiicod\socketio\Broadcast;
 
 /**
  * Class SocketIoCommand
@@ -82,7 +82,7 @@ class SocketIoCommand extends DaemonController
                 'port' => Broadcast::getDriver()->port,
                 'password' => Broadcast::getDriver()->password,
             ])),
-            'channels' => implode(',', Broadcast::channels()),
+            'channels' => empty(Broadcast::channels()) ? 'some_unique_keys' : implode(',', Broadcast::channels()),
             'nsp' => Broadcast::getManager()->nsp,
             'runtime' => Yii::getAlias('@runtime/logs'),
         ];
