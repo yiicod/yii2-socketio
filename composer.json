@@ -1,0 +1,24 @@
+{
+    "name": "yiicod/yii2-socketio",
+    "description": "The simple and powerful socketio for the Yii2 framework",
+    "type": "yii2-extension",
+    "license": "New BSD License",
+    "authors": [
+        {
+            "name": "Alexey Orlov",
+            "email": "aaorlov88@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "yiicod/yii2-cron": "1.*",
+        "yiicod/yii2-base": "*",
+        "symfony/process": "~2.3|~3.0",
+        "predis/predis": "~1.1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "yiicod\\socketio\\": "/"
+        }
+    }
+}
