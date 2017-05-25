@@ -19,7 +19,7 @@ Config
 ```php
     'controllerMap' => [
         'socketio' => [
-            'class' => \common\packages\socketio\commands\SocketIoCommand::class,
+            'class' => \yiicod\socketio\commands\SocketIoCommand::class,
             'server' => 'localhost:1367'
         ],
     ]
@@ -29,7 +29,7 @@ Config
 ```php
     'components' =>[
         'broadcastEvents' => [
-            'class' => \common\packages\socketio\EventManager::class,
+            'class' => \yiicod\socketio\EventManager::class,
             'nsp' => 'some_unique_key',
             // Namespaces with events folders
             'namespaces' => [
@@ -37,7 +37,7 @@ Config
             ]
         ],
         'broadcastDriver' => [
-            'class' => \common\packages\socketio\drivers\RedisDriver::class,
+            'class' => \yiicod\socketio\drivers\RedisDriver::class,
             'hostname' => 'locahost',
             'port' => 6379,
         ],    
