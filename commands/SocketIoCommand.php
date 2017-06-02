@@ -2,13 +2,13 @@
 
 namespace yiicod\socketio\commands;
 
+use yiicod\socketio\Broadcast;
 use Symfony\Component\Process\Process;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Console;
 use yii\helpers\Json;
 use yiicod\cron\commands\DaemonController;
-use yiicod\socketio\Broadcast;
 
 /**
  * Class SocketIoCommand
@@ -22,6 +22,16 @@ class SocketIoCommand extends DaemonController
      * @var string
      */
     public $server = 'locahost:1212';
+
+    /**
+     * [
+     *     key => 'path to key',
+     *     cert => 'path to cert',
+     * ]
+     *
+     * @var array
+     */
+    public $ssl = [];
 
     /**
      * Daemon name
@@ -69,8 +79,8 @@ class SocketIoCommand extends DaemonController
         // Automatically send every new message to available log routes
         Yii::getLogger()->flushInterval = 1;
 
-        $cmd = sprintf('node %s/%s', realpath(dirname(__FILE__) . '/../server'), 'server.es6.js');
-        $args = [
+        $cmd = sprintf('node %s/%s', realpath(dirname(__FILE__) . '/../server'), 'index.js');
+        $args = array_filter([
             'server' => $this->server,
             'pub' => json_encode(array_filter([
                 'host' => Broadcast::getDriver()->hostname,
@@ -84,8 +94,9 @@ class SocketIoCommand extends DaemonController
             ])),
             'channels' => empty(Broadcast::channels()) ? 'some_unique_keys' : implode(',', Broadcast::channels()),
             'nsp' => Broadcast::getManager()->nsp,
+            'ssl' => empty($this->ssl) ? null : json_encode($this->ssl),
             'runtime' => Yii::getAlias('@runtime/logs'),
-        ];
+        ], 'strlen');
         foreach ($args as $key => $value) {
             $cmd .= ' -' . $key . '=\'' . $value . '\'';
         }

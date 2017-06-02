@@ -20,7 +20,12 @@ Config
     'controllerMap' => [
         'socketio' => [
             'class' => \yiicod\socketio\commands\SocketIoCommand::class,
-            'server' => 'localhost:1367'
+            'server' => 'localhost:1367',
+            // If you use SSL, then uncomment and set params
+            //'ssl' => [
+            //    key => 'path to key',
+            //    cert => 'path to cert',
+            //]
         ],
     ]
 ```
