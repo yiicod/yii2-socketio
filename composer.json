@@ -11,6 +11,7 @@
         }
     ],
     "require": {
+        "yiisoft/yii2": "*",
         "yiicod/yii2-cron": "1.*",
         "yiicod/yii2-base": "*",
         "symfony/process": "~2.3|~3.0",

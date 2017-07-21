@@ -2,17 +2,17 @@
 
 namespace yiicod\socketio;
 
-use yiicod\socketio\drivers\RedisDriver;
-use yiicod\socketio\events\EventPolicyInterface;
-use yiicod\socketio\events\EventPubInterface;
-use yiicod\socketio\events\EventRoomInterface;
-use yiicod\socketio\events\EventSubInterface;
 use Exception;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\HtmlPurifier;
 use yii\helpers\Json;
-use yiicod\base\helpers\LoggerHelper;
+use yiicod\base\helpers\LoggerMessage;
+use yiicod\socketio\drivers\RedisDriver;
+use yiicod\socketio\events\EventPolicyInterface;
+use yiicod\socketio\events\EventPubInterface;
+use yiicod\socketio\events\EventRoomInterface;
+use yiicod\socketio\events\EventSubInterface;
 
 /**
  * Class Broadcast
@@ -67,7 +67,7 @@ class Broadcast
 
             $event->handle($data);
         } catch (Exception $e) {
-            Yii::error(LoggerHelper::log($e, Json::encode($data)));
+            Yii::error(LoggerMessage::log($e, Json::encode($data)));
         }
     }
 
@@ -112,7 +112,7 @@ class Broadcast
                 ]);
             }
         } catch (Exception $e) {
-            Yii::error(LoggerHelper::log($e));
+            Yii::error(LoggerMessage::log($e));
         }
     }
 

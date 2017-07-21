@@ -1,31 +1,26 @@
 Socket.io Yii extensions
 ========================
 
-Use all power socket.io in your Yii 2 project.
+Use all power of socket.io in your Yii 2 project.
 
 Config
 ------
 
-###### Install node + npm packages
+###### Install node + additional npm
 ```bash
     cd ~
     curl -sL https://deb.nodesource.com/setup_6.x -o nodesource_setup.sh
     sudo bash nodesource_setup.sh
-    
-    npm install --prefix ./vendor/yiicod/yii2-socketio/server
+    cd common/packages/soketio/server
+    npm install
 ```
 
 ###### Console config
 ```php
     'controllerMap' => [
         'socketio' => [
-            'class' => \yiicod\socketio\commands\SocketIoCommand::class,
-            'server' => 'localhost:1367',
-            // If you use SSL, then uncomment and set params
-            //'ssl' => [
-            //    key => 'path to key',
-            //    cert => 'path to cert',
-            //]
+            'class' => \common\packages\socketio\commands\SocketIoCommand::class,
+            'server' => 'localhost:1367'
         ],
     ]
 ```
@@ -34,8 +29,7 @@ Config
 ```php
     'components' =>[
         'broadcastEvents' => [
-            'class' => \yiicod\socketio\EventManager::class,
-            // If you use onse redis on more then one project
+            'class' => \common\packages\socketio\EventManager::class,
             'nsp' => 'some_unique_key',
             // Namespaces with events folders
             'namespaces' => [
@@ -43,7 +37,7 @@ Config
             ]
         ],
         'broadcastDriver' => [
-            'class' => \yiicod\socketio\drivers\RedisDriver::class,
+            'class' => \common\packages\socketio\drivers\RedisDriver::class,
             'hostname' => 'locahost',
             'port' => 6379,
         ],    
@@ -62,11 +56,6 @@ Usage
 
 ###### Create publisher from server to client
 ```php
-    namespace app\socketio;
-    
-    use yiicod\socketio\events\EventInterface;
-    use yiicod\socketio\events\EventSubInterface;
-    
     class CountEvent implements EventInterface, EventPubInterface
     {
         /**
@@ -107,11 +96,6 @@ Usage
 
 ###### Create receiver from client to server
 ```php
-    namespace app\socketio;
-
-    use yiicod\socketio\events\EventInterface;
-    use yiicod\socketio\events\EventSubInterface;
-
     class MarkAsReadEvent implements EventInterface, EventSubInterface
     {
         /**
@@ -153,12 +137,6 @@ You can have publisher and receiver in one event. If you need check data from cl
 
 ###### Receiver with checking from client to server
 ```php
-    namespace app\socketio;
-
-    use yiicod\socketio\events\EventInterface;
-    use yiicod\socketio\events\EventSubInterface;
-    use yiicod\socketio\events\EventPolicyInterface;
-    
     class MarkAsReadEvent implements EventInterface, EventSubInterface, EventPolicyInterface
     {
         /**
@@ -200,12 +178,6 @@ You can have publisher and receiver in one event. If you need check data from cl
 Soket.io has room functionl. If you need it, you should implement:
 - EventRoomInterface
 ```php
-    namespace app\socketio;
-
-    use yiicod\socketio\events\EventInterface;
-    use yiicod\socketio\events\EventPubInterface;
-    use yiicod\socketio\events\EventRoomInterface;
-    
     class CountEvent implements EventInterface, EventPubInterface, EventRoomInterface
     {
         /**

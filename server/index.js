@@ -4,10 +4,9 @@ const io = require('socket.io')(server);
 const redis = require("redis");
 const subscriber = redis.createClient(JSON.parse(args.sub));
 const publisher = redis.createClient(JSON.parse(args.pub));
-const ConnectionsManager = require('./bundles/connections-manager');
 const RedisIO = require('./bundles/redis-io');
 
-(new RedisIO(new ConnectionsManager(args.nsp), io, subscriber, publisher, args.channels.split(',')))
+(new RedisIO(args.nsp, io, subscriber, publisher, args.channels.split(',')))
     .listen();
 
 

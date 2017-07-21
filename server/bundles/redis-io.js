@@ -3,8 +3,8 @@ const AccessIO = require('./access-io');
 const logger = require('./logger');
 
 class RedisIO {
-    constructor(connections, io, sub, pub, channels) {
-        this.connections = connections;
+    constructor(nsp, io, sub, pub, channels) {
+        this.nsp = nsp;
         this.io = io;
         this.sub = sub;
         this.pub = pub;
@@ -36,59 +36,58 @@ class RedisIO {
         return socket;
     };
 
+    getIoNsp(channel) {
+        return channel.replace(this.nsp, '');
+    }
+
     /**
-     * Init connection
+     * on connection
      * @param channel
      * @param data
      */
-    init(channel, data) {
+    on(channel, data) {
         logger.info('SocketIO > Listening');
 
-        let nsp = this.connections.getNsp(channel),
-            connection = this.connections.getConnection(channel);
+        let nsp = this.getIoNsp(channel);
 
-        if (connection === null) {
-            logger.info('SocketIO > Connection init nsp: %s', nsp);
+        logger.info('SocketIO > Connection on nsp: %s', nsp);
 
-            let nspio = this.io.of('/' + nsp);
-            nspio.on('connection', (socket) => {
-                socket.roomIO = new RoomIO(socket);
-                socket.access = new AccessIO(socket);
+        let nspio = this.io.of('/' + nsp);
+        nspio.on('connection', (socket) => {
+            socket.roomIO = new RoomIO(socket);
+            socket.access = new AccessIO(socket);
 
-                socket = this.wildcard(socket);
+            socket = this.wildcard(socket);
 
-                logger.info('SocketIO > Connected socket: %s, nsp: %s, room: %s', socket.id, nsp, socket.roomIO.name());
+            logger.info('SocketIO > Connected socket: %s, nsp: %s, room: %s', socket.id, nsp, socket.roomIO.name());
 
-                socket.on('disconnect', () => {
-                    logger.info('SocketIO > Disconnected socket: %s, nsp: %s, room: %s', socket.id, nsp, socket.roomIO.name());
-                });
-
-                socket.on('*', (name, data) => {
-                    data = data || {};
-                    if (false === socket.access.can(name)) {
-                        logger.info('SocketIO > On failed socket: %s, nsp: %s, room: %s, name: %s, data: %s', socket.id, nsp, socket.roomIO.name(), name, JSON.stringify(data));
-                    } else {
-                        logger.info('SocketIO > On success socket: %s, nsp: %s, room: %s, name: %s, data: %s', socket.id, nsp, socket.roomIO.name(), name, JSON.stringify(data));
-                        switch (name) {
-                            case 'join' :
-                                socket.roomIO.join(data.room);
-                                break;
-                            case 'leave':
-                                socket.roomIO.leave();
-                                break;
-                            default:
-                                data.room = socket.roomIO.name();
-                                this.pub.publish(channel + '.io', JSON.stringify({
-                                    name: name,
-                                    data: data
-                                }));
-                        }
-                    }
-                });
+            socket.on('disconnect', () => {
+                logger.info('SocketIO > Disconnected socket: %s, nsp: %s, room: %s', socket.id, nsp, socket.roomIO.name());
             });
 
-            this.connections.addConnection(channel, nspio);
-        }
+            socket.on('*', (name, data) => {
+                data = data || {};
+                if (false === socket.access.can(name)) {
+                    logger.info('SocketIO > On failed socket: %s, nsp: %s, room: %s, name: %s, data: %s', socket.id, nsp, socket.roomIO.name(), name, JSON.stringify(data));
+                } else {
+                    logger.info('SocketIO > On success socket: %s, nsp: %s, room: %s, name: %s, data: %s', socket.id, nsp, socket.roomIO.name(), name, JSON.stringify(data));
+                    switch (name) {
+                        case 'join' :
+                            socket.roomIO.join(data.room);
+                            break;
+                        case 'leave':
+                            socket.roomIO.leave();
+                            break;
+                        default:
+                            data.room = socket.roomIO.name();
+                            this.pub.publish(channel + '.io', JSON.stringify({
+                                name: name,
+                                data: data
+                            }));
+                    }
+                }
+            });
+        });
     };
 
     /**
@@ -99,16 +98,14 @@ class RedisIO {
     emit(channel, data) {
         let event = this.parseEvent(data),
             room = event.data.room,
-            connection = this.connections.getConnection(channel);
+            nsp = this.getIoNsp(channel);
 
-        if (null !== connection) {
-            logger.info('SocketIO > Emit ' + JSON.stringify(event.name) + ' ' + JSON.stringify(event.data));
-            if (room) {
-                delete event.data.room;
-                connection.to(room).emit(event.name, event.data);
-            } else {
-                connection.emit(event.name, event.data);
-            }
+        logger.info('SocketIO > Emit ' + JSON.stringify(event.name) + ' ' + JSON.stringify(event.data));
+        if (room) {
+            delete event.data.room;
+            this.io.of('/' + nsp).to(room).emit(event.name, event.data);
+        } else {
+            this.io.of('/' + nsp).emit(event.name, event.data);
         }
     };
 
@@ -118,7 +115,7 @@ class RedisIO {
     listen() {
         for (let i = 0; i < this.channels.length; i++) {
             this.sub.subscribe(this.channels[i]);
-            this.init(this.channels[i], JSON.stringify({}));
+            this.on(this.channels[i], JSON.stringify({}));
         }
 
         this.sub.on("message", (channel, data) => {
