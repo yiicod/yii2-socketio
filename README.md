@@ -38,7 +38,7 @@ Config
         ],
         'broadcastDriver' => [
             'class' => \yiicod\socketio\drivers\RedisDriver::class,
-            'hostname' => 'locahost',
+            'hostname' => 'localhost',
             'port' => 6379,
         ],    
     ]
@@ -84,9 +84,7 @@ Usage
          */
         public function fire(array $data): array
         {
-            return [
-                'count' => 10,
-            ];
+            return $data;
         }
     }
 ```
@@ -95,6 +93,11 @@ Usage
     socket.on('update_notification_count', function(data){
         console.log(data)
     });
+```
+```php
+    //Run broadcast to client
+    \yiicod\socketio\Broadcast::emit(CountEvent::name(), ['count' => 10])
+
 ```
 
 ###### Create receiver from client to server
@@ -129,7 +132,10 @@ Usage
         {
             // Mark notification as read
             // And call client update
-            Broadcast::emit('update_notification_count', ['some key' => 'some value']);
+            // Broadcast::emit('update_notification_count', ['some_key' => 'some_value']);
+            
+            // Push some log
+            file_put_contents(\Yii::getAlias('@app/../file.txt'), serialize($data));
         }
     }
 ```
@@ -180,7 +186,7 @@ You can have publisher and receiver in one event. If you need check data from cl
         {
             // Mark notification as read
             // And call client update
-            Broadcast::emit('update_notification_count', ['some key' => 'some value']);
+            Broadcast::emit('update_notification_count', ['some_key' => 'some_value']);
         }
     }
 ```
