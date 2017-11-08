@@ -28,10 +28,11 @@ class Broadcast
      *
      * @param string $event
      * @param array $data
+     * @param string $id
      *
      * @throws Exception
      */
-    public static function on(string $event, array $data)
+    public static function on(string $event, array $data, string $id)
     {
         // Clear data
         array_walk_recursive($data, function (&$item, $key) {
@@ -61,11 +62,12 @@ class Broadcast
             Yii::$app->db->close();
             Yii::$app->db->open();
 
+
             if (true === $event instanceof EventPolicyInterface && false === $event->can($data)) {
                 return;
             }
 
-            $event->handle($data);
+            $event->handle($data, $id);
         } catch (Exception $e) {
             Yii::error(LoggerMessage::log($e, Json::encode($data)));
         }
@@ -82,6 +84,7 @@ class Broadcast
     public static function emit(string $event, array $data)
     {
         $eventClassName = self::getManager()->getList()[$event] ?? null;
+
         try {
             if (null === $eventClassName) {
                 throw new Exception("Can not find $event");
@@ -98,6 +101,57 @@ class Broadcast
 
             if (true === $event instanceof EventRoomInterface) {
                 $data['room'] = $event->room();
+            }
+
+            Yii::info(Json::encode([
+                'type' => 'emit',
+                'name' => $event,
+                'data' => $data,
+            ]), 'socket.io');
+            foreach ($eventClassName::broadcastOn() as $channel) {
+                static::publish(static::channelName($channel), [
+                    'name' => $eventClassName::name(),
+                    'data' => $data,
+                ]);
+            }
+        } catch (Exception $e) {
+            Yii::error(LoggerMessage::log($e));
+        }
+    }
+
+    /**
+     * Emit event to client
+     *
+     * @param string $event
+     * @param array $data
+     * @param string $id
+     *
+     * @throws Exception
+     */
+    public static function emitOne(string $event, array $data, string $id)
+    {
+        $eventClassName = self::getManager()->getList()[$event] ?? null;
+
+        try {
+            if (null === $eventClassName) {
+                throw new Exception("Can not find $event");
+            }
+
+            /** @var EventPubInterface|EventRoomInterface $event */
+            $event = new $eventClassName($data);
+
+            if (false === $event instanceof EventPubInterface) {
+                throw new Exception('Event should implement EventPubInterface');
+            }
+
+            $data = $event->fire($data);
+
+            if (true === $event instanceof EventRoomInterface) {
+                $data['room'] = $event->room();
+            }
+
+            if ($id) {
+                $data['id'] = $id;
             }
 
             Yii::info(Json::encode([

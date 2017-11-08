@@ -142,21 +142,9 @@ class SocketIoCommand extends DaemonController
                         } else {
                             $payload = Json::decode($message->payload);
                             $data = $payload['data'] ?? [];
+                            $id = $payload['id'] ?? '';
 
-//                            $pid = pcntl_fork();
-//                            if ($pid == -1) {
-//                                exit('Error while forking process.');
-//                            } elseif ($pid) {
-//                                //parent. Wait for the child and continues
-//                                pcntl_wait($status);
-//                                $exitStatus = pcntl_wexitstatus($status);
-//                                if ($exitStatus !== 0) {
-//                                    //put job back to queue or other stuff
-//                                }
-//                            }else {
-                                Broadcast::on($payload['name'], $data);
-//                                Yii::$app->end();
-//                            }
+                            Broadcast::on($payload['name'], $data, $id);
                             // Received the following message from {$message->channel}:") {$message->payload}";
                         }
                         break;

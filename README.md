@@ -11,7 +11,7 @@ Config
     cd ~
     curl -sL https://deb.nodesource.com/setup_6.x -o nodesource_setup.sh
     sudo bash nodesource_setup.sh
-    cd vendor/yiicod/yii2-soketio/server
+    cd common/packages/soketio/server
     npm install
 ```
 
@@ -19,7 +19,7 @@ Config
 ```php
     'controllerMap' => [
         'socketio' => [
-            'class' => \yiicod\socketio\commands\SocketIoCommand::class,
+            'class' => \common\packages\socketio\commands\SocketIoCommand::class,
             'server' => 'localhost:1367'
         ],
     ]
@@ -29,7 +29,7 @@ Config
 ```php
     'components' =>[
         'broadcastEvents' => [
-            'class' => \yiicod\socketio\EventManager::class,
+            'class' => \common\packages\socketio\EventManager::class,
             'nsp' => 'some_unique_key',
             // Namespaces with events folders
             'namespaces' => [
@@ -37,8 +37,8 @@ Config
             ]
         ],
         'broadcastDriver' => [
-            'class' => \yiicod\socketio\drivers\RedisDriver::class,
-            'hostname' => 'localhost',
+            'class' => \common\packages\socketio\drivers\RedisDriver::class,
+            'hostname' => 'locahost',
             'port' => 6379,
         ],    
     ]
@@ -56,9 +56,6 @@ Usage
 
 ###### Create publisher from server to client
 ```php
-    use yiicod\socketio\events\EventInterface;
-    use yiicod\socketio\events\EventPubInterface;
-    
     class CountEvent implements EventInterface, EventPubInterface
     {
         /**
@@ -84,7 +81,9 @@ Usage
          */
         public function fire(array $data): array
         {
-            return $data;
+            return [
+                'count' => 10,
+            ];
         }
     }
 ```
@@ -94,17 +93,9 @@ Usage
         console.log(data)
     });
 ```
-```php
-    //Run broadcast to client
-    \yiicod\socketio\Broadcast::emit(CountEvent::name(), ['count' => 10])
-
-```
 
 ###### Create receiver from client to server
 ```php
-    use yiicod\socketio\events\EventInterface;
-    use yiicod\socketio\events\EventSubInterface;
-    
     class MarkAsReadEvent implements EventInterface, EventSubInterface
     {
         /**
@@ -132,10 +123,7 @@ Usage
         {
             // Mark notification as read
             // And call client update
-            // Broadcast::emit('update_notification_count', ['some_key' => 'some_value']);
-            
-            // Push some log
-            file_put_contents(\Yii::getAlias('@app/../file.txt'), serialize($data));
+            Broadcast::emit('update_notification_count', ['some key' => 'some value']);
         }
     }
 ```
@@ -149,10 +137,6 @@ You can have publisher and receiver in one event. If you need check data from cl
 
 ###### Receiver with checking from client to server
 ```php
-    use yiicod\socketio\events\EventSubInterface;
-    use yiicod\socketio\events\EventInterface;
-    use yiicod\socketio\events\EventPolicyInterface;
-    
     class MarkAsReadEvent implements EventInterface, EventSubInterface, EventPolicyInterface
     {
         /**
@@ -186,7 +170,7 @@ You can have publisher and receiver in one event. If you need check data from cl
         {
             // Mark notification as read
             // And call client update
-            Broadcast::emit('update_notification_count', ['some_key' => 'some_value']);
+            Broadcast::emit('update_notification_count', ['some key' => 'some value']);
         }
     }
 ```
@@ -194,10 +178,6 @@ You can have publisher and receiver in one event. If you need check data from cl
 Soket.io has room functionl. If you need it, you should implement:
 - EventRoomInterface
 ```php
-    use yiicod\socketio\events\EventPubInterface;
-    use yiicod\socketio\events\EventInterface;
-    use yiicod\socketio\events\EventRoomInterface;
-    
     class CountEvent implements EventInterface, EventPubInterface, EventRoomInterface
     {
         /**
