@@ -1,5 +1,5 @@
 {
-    "name": "kbim-dev/yii2-socketio",
+    "name": "yiicod/yii2-socketio",
     "description": "The simple and powerful socketio for the Yii2 framework",
     "type": "yii2-extension",
     "license": "New BSD License",
@@ -19,7 +19,7 @@
     },
     "autoload": {
         "psr-4": {
-            "kbim-dev\\socketio\\": "/"
+            "yiicod\\socketio\\": "/"
         }
     }
 }
