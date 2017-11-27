@@ -22,6 +22,10 @@ use yiicod\socketio\events\EventSubInterface;
 class Broadcast
 {
     protected static $channels = [];
+    const TYPE_SUCCESS 	= 'success';
+    const TYPE_ERROR 	= 'error';
+    const TYPE_DISCONNECT 	= 'disconnect';
+    const MESSAGE 	= 'message';
 
     /**
      * Subscribe to event from client
@@ -165,6 +169,36 @@ class Broadcast
                     'data' => $data,
                 ]);
             }
+        } catch (Exception $e) {
+            Yii::error(LoggerMessage::log($e));
+        }
+    }
+
+    /**
+     * Emit event to client
+     *
+     * @param string $event
+     * @param array $data
+     * @param string $id
+     *
+     * @throws Exception
+     */
+    public static function emitFromYii(string $event, array $data, string $id=null)
+    {
+        try {
+            if ($id) {
+                $data['id'] = $id;
+            }
+
+            Yii::info(Json::encode([
+                'type' => 'emit',
+                'name' => $event,
+                'data' => $data,
+            ]), 'socket.io');
+            static::publish(static::channelName(''), [
+                'name' => $event,
+                'data' => $data,
+            ]);
         } catch (Exception $e) {
             Yii::error(LoggerMessage::log($e));
         }
