@@ -128,7 +128,7 @@ class Broadcast
      *
      * @throws Exception
      */
-    public static function emitOne(string $event, array $data, string $id)
+    public static function emitOne(string $event, array $data, string $id=null)
     {
         $eventClassName = self::getManager()->getList()[$event] ?? null;
 
