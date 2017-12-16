@@ -24,6 +24,11 @@ class Broadcast
     protected static $channels = [];
 
     /**
+     * @var string
+     */
+    public static $yiiAlias = '@app/..';
+
+    /**
      * Subscribe to event from client
      *
      * @param string $event
@@ -45,14 +50,24 @@ class Broadcast
         ]), 'socket.io');
 
         $eventClassName = self::getManager()->getList()[$event] ?? null;
+        if (null === $eventClassName) {
+            Yii::error(LoggerMessage::trace("Can not find $event", Json::encode($data)));
+        }
 
+        (new Process(self::$yiiAlias))->run($eventClassName, $data);
+    }
+
+    /**
+     * Handle process from client
+     *
+     * @param string $handler
+     * @param array $data
+     */
+    public static function process(string $handler, array $data)
+    {
         try {
-            if (null === $eventClassName) {
-                throw new Exception("Can not find $event");
-            }
-
             /** @var EventSubInterface|EventPolicyInterface $event */
-            $event = new $eventClassName($data);
+            $event = new $handler($data);
 
             if (false === $event instanceof EventSubInterface) {
                 throw new Exception('Event should implement EventSubInterface');

@@ -44,6 +44,14 @@ class SocketIoCommand extends DaemonController
     }
 
     /**
+     * Process job by id and connection
+     */
+    public function actionProcess($handler, $data)
+    {
+        Broadcast::process($handler, @unserialize($data) ?? []);
+    }
+
+    /**
      * SocketOI worker
      */
     public function worker()
@@ -154,7 +162,7 @@ class SocketIoCommand extends DaemonController
 //                                    //put job back to queue or other stuff
 //                                }
 //                            }else {
-                                Broadcast::on($payload['name'], $data);
+                            Broadcast::on($payload['name'], $data);
 //                                Yii::$app->end();
 //                            }
                             // Received the following message from {$message->channel}:") {$message->payload}";
