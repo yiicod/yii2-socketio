@@ -17,6 +17,10 @@
         "symfony/process": "~2.3|~3.0",
         "predis/predis": "~1.1.0"
     },
+    "require": {
+        "yiisoft/yii2": "~2.0.8",
+        "liyunfang/yii2-widget-linkpager": "*"
+    },
     "autoload": {
         "psr-4": {
             "yiicod\\socketio\\": "/"

@@ -3,6 +3,8 @@ Socket.io Yii extensions
 
 Use all power of socket.io in your Yii 2 project.
 
+[![Latest Stable Version](https://poser.pugx.org/yiicod/yii2-socketio/v/stable)](https://packagist.org/packages/yiicod/yii2-socketio) [![Total Downloads](https://poser.pugx.org/yiicod/yii2-socketio/downloads)](https://packagist.org/packages/yiicod/yii2-socketio) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/yiicod/yii2-socketio/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/yiicod/yii2-socketio/?branch=master)[![Code Climate](https://codeclimate.com/github/yiicod/yii2-socketio/badges/gpa.svg)](https://codeclimate.com/github/yiicod/yii2-socketio)
+
 Config
 ------
 
@@ -20,9 +22,68 @@ Config
     'controllerMap' => [
         'socketio' => [
             'class' => \yiicod\socketio\commands\SocketIoCommand::class,
+            'server' => 'localhost:1367',
+            'yiiAlias' => '@app' // If you use advanced structure you should use '@app/..'
+        ],
+    ]       
+```
+###### Start sockeio server
+```bash
+    php yii socketio/start
+```
+###### Stop sockeio server
+```bash
+    php yii socketio/stop
+```
+OR use pm2(http://pm2.keymetrics.io/). PM2 is powerful process manager. I prefer use socketio in this way.
+```php
+    'controllerMap' => [
+        'socketio' => [
+            'class' => \yiicod\socketio\commands\WorkerCommand::class,
             'server' => 'localhost:1367'
+            'yiiAlias' => '@app' // If you use advanced structure you should use '@app/..'
         ],
     ]
+```
+pm2 config:
+```json
+    {
+      "apps": [
+        {
+          "name": "socket-io-node-js-server",
+          "script": "yii",
+          "args": [
+            "socketio/node-js-server"
+          ],
+          "exec_interpreter": "php",
+          "exec_mode": "fork_mode",
+          "max_memory_restart": "1G",
+          "watch": false,
+          "merge_logs": true,
+          "out_file": "runtime/logs/node_js_server_out.log",
+          "error_file": "runtime/logs/node_js_server_err.log"
+        },
+        {
+          "name": "socket-io-php-server",
+          "script": "yii",
+          "args": [
+            "socketio/php-server"
+          ],
+          "exec_interpreter": "php",
+          "exec_mode": "fork_mode",
+          "max_memory_restart": "1G",
+          "watch": false,
+          "merge_logs": true,
+          "out_file": "runtime/logs/php_server_out.log",
+          "error_file": "runtime/logs/php_server_err.log"
+        },
+      ]
+    }
+```
+###### Start sockeio server
+```bash
+    php yii socketio/node-js-server
+    php yii socketio/php-server
 ```
 
 ###### Common config
@@ -42,16 +103,6 @@ Config
             'port' => 6379,
         ],    
     ]
-```
-Usage
------
-###### Start sockeio server
-```bash
-    php yii socketio/start
-```
-###### Stop sockeio server
-```bash
-    php yii socketio/stop
 ```
 
 ###### Create publisher from server to client
