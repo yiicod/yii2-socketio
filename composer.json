@@ -21,6 +21,12 @@
         "yiisoft/yii2": "~2.0.8",
         "liyunfang/yii2-widget-linkpager": "*"
     },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        },
+    ],
     "autoload": {
         "psr-4": {
             "yiicod\\socketio\\": "/"
