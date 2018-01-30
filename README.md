@@ -80,7 +80,11 @@ pm2 config:
       ]
     }
 ```
-###### Start sockeio server
+Run PM2 daemons
+```bash
+pm2 start daemons-app.json
+```
+PM2 will be runner these two commands in background:
 ```bash
     php yii socketio/node-js-server
     php yii socketio/php-server
