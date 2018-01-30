@@ -35,7 +35,7 @@ Config
 ```bash
     php yii socketio/stop
 ```
-OR use pm2(http://pm2.keymetrics.io/). PM2 is powerful process manager. I prefer use socketio in this way.
+OR use pm2(http://pm2.keymetrics.io/). PM2 is powerful process manager. Using socketio in this way is the best practice.
 ```php
     'controllerMap' => [
         'socketio' => [
