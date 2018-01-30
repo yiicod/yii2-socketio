@@ -25,7 +25,7 @@
         {
             "type": "composer",
             "url": "https://asset-packagist.org"
-        },
+        }
     ],
     "autoload": {
         "psr-4": {
