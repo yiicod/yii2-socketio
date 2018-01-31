@@ -8,7 +8,7 @@ Use all power of socket.io in your Yii 2 project.
 Config
 ------
 
-###### Install node + additional npm
+##### Install node + additional npm
 ```bash
     cd ~
     curl -sL https://deb.nodesource.com/setup_6.x -o nodesource_setup.sh
@@ -17,7 +17,7 @@ Config
     npm install
 ```
 
-###### Console config
+##### Console config
 ```php
     'controllerMap' => [
         'socketio' => [
@@ -80,17 +80,17 @@ pm2 config:
       ]
     }
 ```
-Run PM2 daemons
+###### Run PM2 daemons
 ```bash
 pm2 start daemons-app.json
 ```
-PM2 will be runner these two commands in background:
+###### PM2 will be run these two commands in background::
 ```bash
     php yii socketio/node-js-server
     php yii socketio/php-server
 ```
 
-###### Common config
+##### Common config
 ```php
     'components' =>[
         'broadcastEvents' => [
@@ -109,7 +109,7 @@ PM2 will be runner these two commands in background:
     ]
 ```
 
-###### Create publisher from server to client
+##### Create publisher from server to client
 ```php
     use yiicod\socketio\events\EventInterface;
     use yiicod\socketio\events\EventPubInterface;
@@ -155,7 +155,7 @@ PM2 will be runner these two commands in background:
 
 ```
 
-###### Create receiver from client to server
+##### Create receiver from client to server
 ```php
     use yiicod\socketio\events\EventInterface;
     use yiicod\socketio\events\EventSubInterface;
@@ -202,7 +202,7 @@ PM2 will be runner these two commands in background:
 You can have publisher and receiver in one event. If you need check data from client to server you should use: 
 - EventPolicyInterface
 
-###### Receiver with checking from client to server
+##### Receiver with checking from client to server
 ```php
     use yiicod\socketio\events\EventSubInterface;
     use yiicod\socketio\events\EventInterface;
