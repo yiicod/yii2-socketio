@@ -28,13 +28,17 @@ class Broadcast
     const MESSAGE 	= 'message';
 
     /**
+     * @var string
+     */
+    public static $yiiAlias = '@app/..';
+
+    /**
      * Subscribe to event from client
      *
      * @param string $event
      * @param array $data
-     * @param string $id
      *
-     * @throws Exception
+     * @param string $id
      */
     public static function on(string $event, array $data, string $id)
     {
@@ -47,17 +51,29 @@ class Broadcast
             'type' => 'on',
             'name' => $event,
             'data' => $data,
+            'id' => $id,
         ]), 'socket.io');
 
         $eventClassName = self::getManager()->getList()[$event] ?? null;
+        if (null === $eventClassName) {
+            Yii::error(LoggerMessage::trace("Can not find $event", Json::encode($data)));
+        }
 
+        (new Process(self::$yiiAlias))->run($eventClassName, $data, $id);
+    }
+
+    /**
+     * Handle process from client
+     *
+     * @param string $handler
+     * @param array $data
+     * @param string $id
+     */
+    public static function process(string $handler, array $data, string $id)
+    {
         try {
-            if (null === $eventClassName) {
-                throw new Exception("Can not find $event");
-            }
-
             /** @var EventSubInterface|EventPolicyInterface $event */
-            $event = new $eventClassName($data);
+            $event = new $handler($data);
 
             if (false === $event instanceof EventSubInterface) {
                 throw new Exception('Event should implement EventSubInterface');
@@ -65,7 +81,6 @@ class Broadcast
 
             Yii::$app->db->close();
             Yii::$app->db->open();
-
 
             if (true === $event instanceof EventPolicyInterface && false === $event->can($data)) {
                 return;

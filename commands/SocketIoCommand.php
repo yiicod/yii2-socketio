@@ -43,6 +43,15 @@ class SocketIoCommand extends DaemonController
         return 'socket.io';
     }
 
+
+    /**
+     * Process job by id and connection
+     */
+    public function actionProcess($handler, $data, $id)
+    {
+        Broadcast::process($handler, @unserialize($data) ?? [], $id);
+    }
+
     /**
      * SocketOI worker
      */
