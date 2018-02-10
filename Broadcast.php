@@ -37,8 +37,9 @@ class Broadcast
      *
      * @param string $event
      * @param array $data
-     *
      * @param string $id
+     *
+     * @throws Exception
      */
     public static function on(string $event, array $data, string $id)
     {
@@ -103,7 +104,6 @@ class Broadcast
     public static function emit(string $event, array $data)
     {
         $eventClassName = self::getManager()->getList()[$event] ?? null;
-
         try {
             if (null === $eventClassName) {
                 throw new Exception("Can not find $event");

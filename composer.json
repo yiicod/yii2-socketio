@@ -2,7 +2,7 @@
     "name": "yiicod/yii2-socketio",
     "description": "The simple and powerful socketio for the Yii2 framework",
     "type": "yii2-extension",
-    "license": "New BSD License",
+    "license": "MIT",
     "authors": [
         {
             "name": "Alexey Orlov",
@@ -17,6 +17,16 @@
         "symfony/process": "~2.3|~3.0",
         "predis/predis": "~1.1.0"
     },
+    "require": {
+        "yiisoft/yii2": "~2.0.8",
+        "liyunfang/yii2-widget-linkpager": "*"
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "yiicod\\socketio\\": "/"

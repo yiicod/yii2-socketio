@@ -1,5 +1,3 @@
-const logger = require('./logger');
-
 class RoomIO {
     constructor(socket) {
         this.socket = socket;
@@ -11,7 +9,6 @@ class RoomIO {
     }
 
     join(room) {
-        logger.info('JOIN TO ROOM: %s', room);
         this.leave();
         this.room[this.socket.id] = room;
 

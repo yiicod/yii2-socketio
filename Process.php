@@ -7,11 +7,13 @@ use yii\helpers\HtmlPurifier;
 
 /**
  * Class Process
+ *
  * @package SfCod\SocketIoBundle
  */
 
 /**
  * Class Process
+ *
  * @package yiicod\socketio
  */
 class Process
@@ -19,7 +21,7 @@ class Process
     /**
      * @var array
      */
-    static private $_inWork = [];
+    private static $_inWork = [];
 
     /**
      * @var
@@ -31,11 +33,12 @@ class Process
      */
     public function getParallelEnv(): int
     {
-        return getenv('SOCKET_IO.PARALLEL') ? getenv('SOCKET_IO.PARALLEL') : 100;
+        return getenv('SOCKET_IO.PARALLEL') ? getenv('SOCKET_IO.PARALLEL') : 10;
     }
 
     /**
      * Process constructor.
+     *
      * @param $yiiAlias
      */
     public function __construct($yiiAlias)
@@ -81,6 +84,7 @@ class Process
      *
      * @param string $handle
      * @param array $data
+     *
      * @return \Symfony\Component\Process\Process
      */
     private function push(string $handle, array $data, string $id): \Symfony\Component\Process\Process
