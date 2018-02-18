@@ -1,5 +1,5 @@
-Socket.io Yii extensions
-========================
+Socket.io Yii extension
+=======================
 
 Use all power of socket.io in your Yii 2 project.
 
@@ -22,8 +22,7 @@ Config
     'controllerMap' => [
         'socketio' => [
             'class' => \yiicod\socketio\commands\SocketIoCommand::class,
-            'server' => 'localhost:1367',
-            'yiiAlias' => '@app' // If you use advanced structure you should use '@app/..'
+            'server' => 'localhost:1367'
         ],
     ]       
 ```
@@ -35,13 +34,12 @@ Config
 ```bash
     php yii socketio/stop
 ```
-##### OR use pm2(http://pm2.keymetrics.io/). PM2 is powerful process manager. Using socketio in this way is the best practice.
+##### OR use pm2(http://pm2.keymetrics.io/). This variant more preferable.
 ```php
     'controllerMap' => [
         'socketio' => [
             'class' => \yiicod\socketio\commands\WorkerCommand::class,
             'server' => 'localhost:1367'
-            'yiiAlias' => '@app' // If you use advanced structure you should use '@app/..'
         ],
     ]
 ```

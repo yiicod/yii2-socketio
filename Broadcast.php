@@ -24,11 +24,6 @@ class Broadcast
     protected static $channels = [];
 
     /**
-     * @var string
-     */
-    public static $yiiAlias = '@app/..';
-
-    /**
      * Subscribe to event from client
      *
      * @param string $event
@@ -54,7 +49,7 @@ class Broadcast
             Yii::error(LoggerMessage::trace("Can not find $event", Json::encode($data)));
         }
 
-        (new Process(self::$yiiAlias))->run($eventClassName, $data);
+        Yii::$container->get(Process::Process)->run($eventClassName, $data);
     }
 
     /**
