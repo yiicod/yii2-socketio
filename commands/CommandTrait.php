@@ -24,7 +24,7 @@ trait CommandTrait
      *
      * @var array
      */
-    public $ssl = [];}
+    public $ssl = [];
 
     /**
      * Process job by id and connection
