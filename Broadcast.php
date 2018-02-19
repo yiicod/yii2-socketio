@@ -49,7 +49,7 @@ class Broadcast
             Yii::error(LoggerMessage::trace("Can not find $event", Json::encode($data)));
         }
 
-        Yii::$container->get(Process::Process)->run($eventClassName, $data);
+        Yii::$container->get(Process::class)->run($eventClassName, $data);
     }
 
     /**
