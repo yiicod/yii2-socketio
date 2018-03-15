@@ -254,6 +254,12 @@ Soket.io has room functionl. If you need it, you should implement:
     class CountEvent implements EventInterface, EventPubInterface, EventRoomInterface
     {
         /**
+         * User id
+         * @var int
+         */
+        protected $userId;
+        
+        /**
          * Changel name. For client side this is nsp.
          */
         public static function broadcastOn(): array
@@ -275,7 +281,7 @@ Soket.io has room functionl. If you need it, you should implement:
          */
         public function room(): string
         {
-            return md5('notifications' . 'room-1');
+            return 'user_id_' . $this->>userId;
         }            
             
         /**
@@ -285,6 +291,7 @@ Soket.io has room functionl. If you need it, you should implement:
          */
         public function fire(array $data): array
         {
+            $this->userId = $data['user_id'];
             return [
                 'count' => 10,
             ];
@@ -293,7 +300,7 @@ Soket.io has room functionl. If you need it, you should implement:
 ```
 ```js
     var socket = io('localhost:1367/notifications');
-    socket.emit('join', {room: 'room-1'});
+    socket.emit('join', {room: 'user_id_'<?= 10 ?>});
     // Now you will receive data from 'room-1'
     socket.on('update_notification_count', function(data){
         console.log(data)
