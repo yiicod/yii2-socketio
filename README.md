@@ -291,7 +291,7 @@ Soket.io has room functionl. If you need it, you should implement:
          */
         public function fire(array $data): array
         {
-            $this->userId = $data['user_id'];
+            $this->userId = $data['userId'];
             return [
                 'count' => 10,
             ];
@@ -307,4 +307,9 @@ Soket.io has room functionl. If you need it, you should implement:
     });
     // You can leave room
     socket.emit('leave');
+```
+```php
+    //Run broadcast to user id = 10 
+    \yiicod\socketio\Broadcast::emit(CountEvent::name(), ['count' => 10, 'userId' => 10])
+
 ```
