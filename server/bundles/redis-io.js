@@ -1,5 +1,4 @@
 const RoomIO = require('./room-io');
-const AccessIO = require('./access-io');
 const logger = require('./logger');
 
 class RedisIO {
@@ -55,7 +54,6 @@ class RedisIO {
     let nspio = this.io.of('/' + nsp);
     nspio.on('connection', (socket) => {
       socket.roomIO = new RoomIO(socket);
-      socket.access = new AccessIO(socket);
 
       socket = this.wildcard(socket);
 
@@ -72,25 +70,21 @@ class RedisIO {
 
       socket.on('*', (name, data) => {
         data = data || {};
-        if (false === socket.access.can(name)) {
-          logger.info('SocketIO > On failed socket: %s, nsp: %s, room: %s, name: %s, data: %s', socket.id, nsp, socket.roomIO.name(), name, JSON.stringify(data));
-        } else {
-          logger.info('SocketIO > On success socket: %s, nsp: %s, room: %s, name: %s, data: %s', socket.id, nsp, socket.roomIO.name(), name, JSON.stringify(data));
-          switch (name) {
-            case 'join' :
-              socket.roomIO.join(data.room);
-              break;
-            case 'leave':
-              socket.roomIO.leave();
-              break;
-            default:
-              data.room = socket.roomIO.name();
-              this.pub.publish(channel + '.io', JSON.stringify({
-                name: name,
-                data: data,
-                id: socket.id
-              }));
-          }
+        logger.info('SocketIO > On success socket: %s, nsp: %s, room: %s, name: %s, data: %s', socket.id, nsp, socket.roomIO.name(), name, JSON.stringify(data));
+        switch (name) {
+          case 'join' :
+            socket.roomIO.join(data.room);
+            break;
+          case 'leave':
+            socket.roomIO.leave();
+            break;
+          default:
+            data.room = socket.roomIO.name();
+            this.pub.publish(channel + '.io', JSON.stringify({
+              name: name,
+              data: data,
+              id: socket.id
+            }));
         }
       });
     });
