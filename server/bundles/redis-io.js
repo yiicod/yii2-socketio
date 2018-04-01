@@ -1,6 +1,7 @@
 const RoomIO = require('./room-io');
 const AccessIO = require('./access-io');
 const logger = require('./logger');
+const util = require('util');
 
 class RedisIO {
     constructor(nsp, io, sub, pub, channels) {
@@ -46,31 +47,21 @@ class RedisIO {
      * @param data
      */
     on(channel, data) {
-        logger.info('SocketIO > Listening');
-
         let nsp = this.getIoNsp(channel);
-
-        logger.info('SocketIO > Connection on nsp: %s', nsp);
-
         let nspio = this.io.of('/' + nsp);
+
         nspio.on('connection', (socket) => {
             socket.roomIO = new RoomIO(socket);
             socket.access = new AccessIO(socket);
 
             socket = this.wildcard(socket);
-
-            logger.info('SocketIO > Connected socket: %s, nsp: %s, room: %s', socket.id, nsp, socket.roomIO.name());
-
             socket.on('disconnect', () => {
-                logger.info('SocketIO > Disconnected socket: %s, nsp: %s, room: %s', socket.id, nsp, socket.roomIO.name());
+                // socket.io disconnect
             });
 
             socket.on('*', (name, data) => {
                 data = data || {};
-                if (false === socket.access.can(name)) {
-                    logger.info('SocketIO > On failed socket: %s, nsp: %s, room: %s, name: %s, data: %s', socket.id, nsp, socket.roomIO.name(), name, JSON.stringify(data));
-                } else {
-                    logger.info('SocketIO > On success socket: %s, nsp: %s, room: %s, name: %s, data: %s', socket.id, nsp, socket.roomIO.name(), name, JSON.stringify(data));
+                if (true === socket.access.can(name)) {
                     switch (name) {
                         case 'join' :
                             socket.roomIO.join(data.room);
@@ -85,6 +76,8 @@ class RedisIO {
                                 data: data
                             }));
                     }
+                }else{
+                    throw new Error(util.format('Socket %s "can not get access/speed limit", nsp: %s, room: %s, name: %s, data: %s', socket.id, nsp, socket.roomIO.name(), name, JSON.stringify(data)));
                 }
             });
         });
@@ -100,7 +93,6 @@ class RedisIO {
             room = event.data.room,
             nsp = this.getIoNsp(channel);
 
-        logger.info('SocketIO > Emit ' + JSON.stringify(event.name) + ' ' + JSON.stringify(event.data));
         if (room) {
             delete event.data.room;
             this.io.of('/' + nsp).to(room).emit(event.name, event.data);
