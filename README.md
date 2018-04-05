@@ -1,5 +1,5 @@
-Socket.io Yii extensions
-========================
+Socket.io Yii extension
+=======================
 
 Use all power of socket.io in your Yii 2 project.
 
@@ -42,6 +42,23 @@ Config
             'class' => \yiicod\socketio\commands\WorkerCommand::class,
             'server' => 'localhost:1367'
             'yiiAlias' => '@app' // If you use advanced structure you should use '@app/..'
+        ],
+    ]       
+```
+###### Start sockeio server
+```bash
+    php yii socketio/start
+```
+###### Stop sockeio server
+```bash
+    php yii socketio/stop
+```
+##### OR use pm2(http://pm2.keymetrics.io/). This variant more preferable.
+```php
+    'controllerMap' => [
+        'socketio' => [
+            'class' => \yiicod\socketio\commands\WorkerCommand::class,
+            'server' => 'localhost:1367'
         ],
     ]
 ```
@@ -256,6 +273,12 @@ Soket.io has room functionl. If you need it, you should implement:
     class CountEvent implements EventInterface, EventPubInterface, EventRoomInterface
     {
         /**
+         * User id
+         * @var int
+         */
+        protected $userId;
+        
+        /**
          * Changel name. For client side this is nsp.
          */
         public static function broadcastOn(): array
@@ -277,7 +300,7 @@ Soket.io has room functionl. If you need it, you should implement:
          */
         public function room(): string
         {
-            return md5('notifications' . 'room-1');
+            return 'user_id_' . $this->>userId;
         }            
             
         /**
@@ -287,6 +310,7 @@ Soket.io has room functionl. If you need it, you should implement:
          */
         public function fire(array $data): array
         {
+            $this->userId = $data['userId'];
             return [
                 'count' => 10,
             ];
@@ -295,11 +319,16 @@ Soket.io has room functionl. If you need it, you should implement:
 ```
 ```js
     var socket = io('localhost:1367/notifications');
-    socket.emit('join', {room: 'room-1'});
+    socket.emit('join', {room: 'user_id_'<?= 10 ?>});
     // Now you will receive data from 'room-1'
     socket.on('update_notification_count', function(data){
         console.log(data)
     });
     // You can leave room
     socket.emit('leave');
+```
+```php
+    //Run broadcast to user id = 10 
+    \yiicod\socketio\Broadcast::emit(CountEvent::name(), ['count' => 10, 'userId' => 10])
+
 ```

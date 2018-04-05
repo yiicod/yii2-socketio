@@ -1,5 +1,6 @@
 const RoomIO = require('./room-io');
 const logger = require('./logger');
+const util = require('util');
 
 class RedisIO {
   constructor(nsp, io, sub, pub, channels) {
@@ -39,21 +40,22 @@ class RedisIO {
     return channel.replace(this.nsp, '');
   }
 
-  /**
-   * on connection
-   * @param channel
-   * @param data
-   */
-  on(channel, data) {
-    logger.info('SocketIO > Listening');
+    /**
+     * on connection
+     * @param channel
+     * @param data
+     */
+    on(channel, data) {
+        logger.info('SocketIO > Listening');
 
-    let nsp = this.getIoNsp(channel);
+        let nsp = this.getIoNsp(channel);
 
-    logger.info('SocketIO > Connection on nsp: %s', nsp);
+        logger.info('SocketIO > Connection on nsp: %s', nsp);
 
-    let nspio = this.io.of('/' + nsp);
-    nspio.on('connection', (socket) => {
-      socket.roomIO = new RoomIO(socket);
+        let nspio = this.io.of('/' + nsp);
+        nspio.on('connection', (socket) => {
+            socket.roomIO = new RoomIO(socket);
+            socket.access = new AccessIO(socket);
 
       socket = this.wildcard(socket);
 
@@ -68,27 +70,30 @@ class RedisIO {
         logger.info('SocketIO > Disconnected socket: %s, nsp: %s, room: %s', socket.id, nsp, socket.roomIO.name());
       });
 
-      socket.on('*', (name, data) => {
-        data = data || {};
-        logger.info('SocketIO > On success socket: %s, nsp: %s, room: %s, name: %s, data: %s', socket.id, nsp, socket.roomIO.name(), name, JSON.stringify(data));
-        switch (name) {
-          case 'join' :
-            socket.roomIO.join(data.room);
-            break;
-          case 'leave':
-            socket.roomIO.leave();
-            break;
-          default:
-            data.room = socket.roomIO.name();
-            this.pub.publish(channel + '.io', JSON.stringify({
-              name: name,
-              data: data,
-              id: socket.id
-            }));
-        }
-      });
-    });
-  };
+            socket.on('*', (name, data) => {
+                data = data || {};
+                if (true === socket.access.can(name)) {
+                    switch (name) {
+                        case 'join' :
+                            socket.roomIO.join(data.room);
+                            break;
+                        case 'leave':
+                            socket.roomIO.leave();
+                            break;
+                        default:
+                            data.room = socket.roomIO.name();
+                            this.pub.publish(channel + '.io', JSON.stringify({
+                                name: name,
+                                data: data
+                                id: socket.id
+                            }));
+                    }
+                }else{
+                    throw new Error(util.format('Socket %s "can not get access/speed limit", nsp: %s, room: %s, name: %s, data: %s', socket.id, nsp, socket.roomIO.name(), name, JSON.stringify(data)));
+                }
+            });
+        });
+    };
 
   /**
    * Emit event to exist connection

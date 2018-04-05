@@ -1,20 +1,39 @@
+const logger = require('./logger');
+
 class AccessIO {
     constructor(socket) {
         this.socket = socket;
-        this.events = [];
-
-        // Const
-        this.REQUEST_LIMIT = 5;
     }
 
+    /**
+     * Get limit number
+     *
+     * @returns {number}
+     */
+    getRequestLimit() {
+        return process.env.SOCKET_IO_SPEED_LIMIT || 3;
+    }
+
+    /**
+     * Every request sent faster than 2ms will return false, otherwise the handler get run.
+     * @param name Event name
+     * @returns {boolean}
+     */
     isDdos(name) {
-        let event = this.events[this.socket.id + name] || {};
-        if (event.timestamp && (new Date().getTime() - event.timestamp) < this.REQUEST_LIMIT) {
+        let data = (this.socket.accessIo || {})[name] || {};
+        
+        if (this.getRequestLimit() <= 0) {
+            return false;
+        }
+
+        if (data.timestamp && (new Date().getTime() - data.timestamp) < this.getRequestLimit()) {
             return true;
         } else {
-            event.timestamp = new Date().getTime();
+            data.timestamp = new Date().getTime();
         }
-        this.events[this.socket.id + name] = event;
+
+        this.socket.accessIo = this.socket.accessIo || {};
+        this.socket.accessIo[name] = data;
 
         return false;
     }

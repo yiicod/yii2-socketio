@@ -27,24 +27,6 @@ trait CommandTrait
     public $ssl = [];
 
     /**
-     * Yii console script path (php yii ...).
-     *
-     * @var string
-     */
-    public $yiiAlias = '@app/..';
-
-
-    /**
-     * Initializes the object.
-     * This method is invoked at the end of the constructor after the object is initialized with the
-     * given configuration.
-     */
-    public function init()
-    {
-        Broadcast::$yiiAlias = $this->yiiAlias;
-    }
-
-    /**
      * Process job by id and connection
      */
     public function actionProcess($handler, $data, $id)

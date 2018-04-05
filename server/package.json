@@ -1,15 +1,16 @@
 {
   "name": "yii2-broadcast",
   "version": "1.0.0",
-  "main": "server.es6.js",
+  "main": "index.js",
   "private": true,
   "scripts": {
-    "start": "supervisor --debug server.es6.js"
+    "start": "supervisor --debug index.js"
   },
   "dependencies": {
-    "argparse": "^1.0.9",
+    "argparse": "^1.0.10",
     "redis": "^2.8.0",
-    "socket.io": "~2.0.4",
-    "winston": "*"
+    "socket.io": "^2.0.4",
+    "winston": "^2.4.0",
+    "dotenv": "^5.0.1"
   }
 }

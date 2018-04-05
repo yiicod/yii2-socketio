@@ -26,7 +26,7 @@ class Process
     /**
      * @var
      */
-    private $yiiAlias;
+    public $yiiAlias;
 
     /**
      * @return int
@@ -34,16 +34,6 @@ class Process
     public function getParallelEnv(): int
     {
         return getenv('SOCKET_IO.PARALLEL') ? getenv('SOCKET_IO.PARALLEL') : 10;
-    }
-
-    /**
-     * Process constructor.
-     *
-     * @param $yiiAlias
-     */
-    public function __construct($yiiAlias)
-    {
-        $this->yiiAlias = $yiiAlias;
     }
 
     /**
@@ -89,7 +79,15 @@ class Process
      */
     private function push(string $handle, array $data, string $id): \Symfony\Component\Process\Process
     {
-        $cmd = HtmlPurifier::process(sprintf("php yii socketio/process %s %s %s", escapeshellarg($handle), escapeshellarg(serialize($data)), escapeshellarg($id)));
+        $cmd = HtmlPurifier::process(sprintf('php yii socketio/process %s %s', escapeshellarg($handle), escapeshellarg(serialize($data))));
+
+        if (is_null($this->yiiAlias)) {
+            if (file_exists(Yii::getAlias('@app/yii'))) {
+                $this->yiiAlias = '@app';
+            } elseif (file_exists(Yii::getAlias('@app/../yii'))) {
+                $this->yiiAlias = '@app/../';
+            }
+        }
 
         $process = new \Symfony\Component\Process\Process($cmd, Yii::getAlias($this->yiiAlias));
         $process->setTimeout(10);
