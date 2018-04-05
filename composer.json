@@ -5,9 +5,8 @@
   "license": "MIT",
   "authors": [
     {
-      "name": "Alexey Orlov",
-      "email": "aaorlov88@gmail.com",
-      "role": "Developer"
+      "name": "kbim-dev",
+      "email": "info@kbim.com.ua"
     }
   ],
   "require": {
@@ -28,7 +27,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "yiicod\\socketio\\": "/"
+      "kbim\\socketio\\": "/"
     }
   }
 }
