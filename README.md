@@ -17,7 +17,7 @@ Config
     npm install
 ```
 
-##### Console config
+#### Console config (simple fork)
 ```php
     'controllerMap' => [
         'socketio' => [
@@ -34,7 +34,7 @@ Config
 ```bash
     php yii socketio/stop
 ```
-##### OR use pm2(http://pm2.keymetrics.io/). This variant more preferable.
+#### Console config + PM2(http://pm2.keymetrics.io/). This variant more preferable for console configuration
 ```php
     'controllerMap' => [
         'socketio' => [
