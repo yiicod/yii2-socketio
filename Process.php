@@ -79,7 +79,7 @@ class Process
      */
     private function push(string $handle, array $data): \Symfony\Component\Process\Process
     {
-        $cmd = HtmlPurifier::process(sprintf('php yii socketio/process %s %s', escapeshellarg($handle), escapeshellarg(serialize($data))));
+        $cmd = HtmlPurifier::process(sprintf('php yii socketio/process %s %s', escapeshellarg($handle), escapeshellarg(json_encode($data))));
 
         if (is_null($this->yiiAlias)) {
             if (file_exists(Yii::getAlias('@app/yii'))) {
