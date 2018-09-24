@@ -26,7 +26,7 @@ class Process
     /**
      * @var
      */
-    public $yiiAlias;
+    private $yiiAlias;
 
     /**
      * @return int
@@ -37,14 +37,24 @@ class Process
     }
 
     /**
+     * Process constructor.
+     *
+     * @param $yiiAlias
+     */
+    public function __construct($yiiAlias)
+    {
+        $this->yiiAlias = $yiiAlias;
+    }
+
+    /**
      * Run process. If more then limit then wait and try run process on more time.
      *
      * @param string $handle
      * @param array $data
-     *
+     * @param string $id
      * @return \Symfony\Component\Process\Process
      */
-    public function run(string $handle, array $data)
+    public function run(string $handle, array $data, string $id)
     {
         $this->inWork();
 
@@ -54,7 +64,7 @@ class Process
             $this->inWork();
         }
 
-        return $this->push($handle, $data);
+        return $this->push($handle, $data, $id);
     }
 
     /**
@@ -77,17 +87,9 @@ class Process
      *
      * @return \Symfony\Component\Process\Process
      */
-    private function push(string $handle, array $data): \Symfony\Component\Process\Process
+    private function push(string $handle, array $data, string $id): \Symfony\Component\Process\Process
     {
-        $cmd = HtmlPurifier::process(sprintf('php yii socketio/process %s %s', escapeshellarg($handle), escapeshellarg(serialize($data))));
-
-        if (is_null($this->yiiAlias)) {
-            if (file_exists(Yii::getAlias('@app/yii'))) {
-                $this->yiiAlias = '@app';
-            } elseif (file_exists(Yii::getAlias('@app/../yii'))) {
-                $this->yiiAlias = '@app/../';
-            }
-        }
+        $cmd = HtmlPurifier::process(sprintf("php yii socketio/process %s %s %s", escapeshellarg($handle), escapeshellarg(serialize($data)), escapeshellarg($id)));
 
         $process = new \Symfony\Component\Process\Process($cmd, Yii::getAlias($this->yiiAlias));
         $process->setTimeout(10);

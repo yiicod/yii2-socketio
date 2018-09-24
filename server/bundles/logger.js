@@ -3,7 +3,7 @@ const args = require('./args');
 
 const logger = new (winston.Logger)({
     transports: [
-        // new winston.transports.File({filename: args.runtime + '/all-logs.log'}),
+        // new winston.transports.File({filename: '/home/all-logs.log'}),
         // new (winston.transports.Console)({colorize: true, timestamp: true}),
     ],
     exceptionHandlers: [

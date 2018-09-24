@@ -22,34 +22,59 @@ use yiicod\socketio\events\EventSubInterface;
 class Broadcast
 {
     protected static $channels = [];
+    const TYPE_SUCCESS 	= 'success';
+    const TYPE_ERROR 	= 'error';
+    const TYPE_DISCONNECT 	= 'disconnect';
+    const MESSAGE 	= 'message';
+
+    /**
+     * @var string
+     */
+    public static $yiiAlias = '@app/..';
 
     /**
      * Subscribe to event from client
      *
      * @param string $event
      * @param array $data
+     * @param string $id
      *
      * @throws Exception
      */
-    public static function on(string $event, array $data)
+    public static function on(string $event, array $data, string $id)
     {
+        ob_start();
+        var_dump($data);
+        $ob_result = ob_get_clean();
+        if(file_exists('/home/vd/var_dump.txt')){
+            @chmod('/home/vd/var_dump.txt', 0777);
+        }
+        file_put_contents ( '/home/vd/var_dump.txt', $ob_result );
         // Clear data
         array_walk_recursive($data, function (&$item, $key) {
             $item = HtmlPurifier::process($item);
         });
-
+        ob_start();
+        var_dump($data);
+        $ob_result = ob_get_clean();
+        if(file_exists('/home/vd/var_dump2.txt')){
+            @chmod('/home/vd/var_dump2.txt', 0777);
+        }
+        file_put_contents ( '/home/vd/var_dump2.txt', $ob_result );
         Yii::info(Json::encode([
             'type' => 'on',
             'name' => $event,
             'data' => $data,
+            'id' => $id,
         ]), 'socket.io');
 
         $eventClassName = self::getManager()->getList()[$event] ?? null;
-        if (null === $eventClassName) {
-            Yii::error(LoggerMessage::trace("Can not find $event", Json::encode($data)));
+        if (is_null($eventClassName)) {
+            Yii::error(LoggerMessage::trace("Can not find $event", [Json::encode($data)]));
+	        $eventClassName = 'log';
         }
 
-        Yii::$container->get(Process::class)->run($eventClassName, $data);
+        (new Process(self::$yiiAlias))->run($eventClassName, $data, $id);
     }
 
     /**
@@ -57,8 +82,9 @@ class Broadcast
      *
      * @param string $handler
      * @param array $data
+     * @param string $id
      */
-    public static function process(string $handler, array $data)
+    public static function process(string $handler, array $data, string $id)
     {
         try {
             /** @var EventSubInterface|EventPolicyInterface $event */
@@ -75,7 +101,7 @@ class Broadcast
                 return;
             }
 
-            $event->handle($data);
+            $event->handle($data, $id);
         } catch (Exception $e) {
             Yii::error(LoggerMessage::log($e, Json::encode($data)));
         }
@@ -121,6 +147,87 @@ class Broadcast
                     'data' => $data,
                 ]);
             }
+        } catch (Exception $e) {
+            Yii::error(LoggerMessage::log($e));
+        }
+    }
+
+    /**
+     * Emit event to client
+     *
+     * @param string $event
+     * @param array $data
+     * @param string $id
+     *
+     * @throws Exception
+     */
+    public static function emitOne(string $event, array $data, string $id=null)
+    {
+        $eventClassName = self::getManager()->getList()[$event] ?? null;
+
+        try {
+            if (null === $eventClassName) {
+                throw new Exception("Can not find $event");
+            }
+
+            /** @var EventPubInterface|EventRoomInterface $event */
+            $event = new $eventClassName($data);
+
+            if (false === $event instanceof EventPubInterface) {
+                throw new Exception('Event should implement EventPubInterface');
+            }
+
+            $data = $event->fire($data);
+
+            if (true === $event instanceof EventRoomInterface) {
+                $data['room'] = $event->room();
+            }
+
+            if ($id) {
+                $data['id'] = $id;
+            }
+
+            Yii::info(Json::encode([
+                'type' => 'emit',
+                'name' => $event,
+                'data' => $data,
+            ]), 'socket.io');
+            foreach ($eventClassName::broadcastOn() as $channel) {
+                static::publish(static::channelName($channel), [
+                    'name' => $eventClassName::name(),
+                    'data' => $data,
+                ]);
+            }
+        } catch (Exception $e) {
+            Yii::error(LoggerMessage::log($e));
+        }
+    }
+
+    /**
+     * Emit event to client
+     *
+     * @param string $event
+     * @param array $data
+     * @param string $id
+     *
+     * @throws Exception
+     */
+    public static function emitFromYii(string $event, array $data, string $id=null)
+    {
+        try {
+            if ($id) {
+                $data['id'] = $id;
+            }
+
+            Yii::info(Json::encode([
+                'type' => 'emit',
+                'name' => $event,
+                'data' => $data,
+            ]), 'socket.io');
+            static::publish(static::channelName(''), [
+                'name' => $event,
+                'data' => $data,
+            ]);
         } catch (Exception $e) {
             Yii::error(LoggerMessage::log($e));
         }

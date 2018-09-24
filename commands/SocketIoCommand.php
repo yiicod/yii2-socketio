@@ -38,20 +38,6 @@ class SocketIoCommand extends DaemonController
         // Save node proccess pid
         $this->addPid($process->getPid());
 
-//        // Init connection for each channel
-//        foreach (Broadcast::channels() as $channel) {
-//            var_dump($channel);
-//            Broadcast::publish($channel, ['name' => __CLASS__]);
-//        }
-//        $process->setTimeout(360000);
-//        $process->setIdleTimeout(360000);
-//        $process->wait(function ($type, $buffer) {
-//            if (Process::ERR === $type) {
-//                echo 'ERR > ' . $buffer;
-//            } else {
-//                echo 'OUT > ' . $buffer;
-//            }
-//        });
         while ($process->isRunning()) {
             $this->predis();
         }

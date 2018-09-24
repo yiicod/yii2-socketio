@@ -14,8 +14,9 @@ interface EventSubInterface
      * Handle published event data
      *
      * @param array $data
+     * @param string $id
      *
      * @return mixed
      */
-    public function handle(array $data);
+    public function handle(array $data, string $id);
 }

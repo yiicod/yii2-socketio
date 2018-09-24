@@ -27,11 +27,29 @@ trait CommandTrait
     public $ssl = [];
 
     /**
+     * Yii console script path (php yii ...).
+     *
+     * @var string
+     */
+    public $yiiAlias = '@app/..';
+
+
+    /**
+     * Initializes the object.
+     * This method is invoked at the end of the constructor after the object is initialized with the
+     * given configuration.
+     */
+    public function init()
+    {
+        Broadcast::$yiiAlias = $this->yiiAlias;
+    }
+
+    /**
      * Process job by id and connection
      */
-    public function actionProcess($handler, $data)
+    public function actionProcess($handler, $data, $id)
     {
-        Broadcast::process($handler, @unserialize($data) ?? []);
+        Broadcast::process($handler, @unserialize($data) ?? [], $id);
     }
 
     public function nodejs()
@@ -105,6 +123,7 @@ trait CommandTrait
                         } else {
                             $payload = Json::decode($message->payload);
                             $data = $payload['data'] ?? [];
+                            $id = $payload['id'] ?? '';
 
 //                            $pid = pcntl_fork();
 //                            if ($pid == -1) {
@@ -117,7 +136,7 @@ trait CommandTrait
 //                                    //put job back to queue or other stuff
 //                                }
 //                            }else {
-                            Broadcast::on($payload['name'], $data);
+                            Broadcast::on($payload['name'], $data, $id);
 //                                Yii::$app->end();
 //                            }
                             // Received the following message from {$message->channel}:") {$message->payload}";

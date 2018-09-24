@@ -1,34 +1,35 @@
 {
-  "name": "yiicod/yii2-socketio",
-  "description": "The simple and powerful socketio for the Yii2 framework",
-  "type": "yii2-extension",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Alexey Orlov",
-      "email": "aaorlov88@gmail.com",
-      "role": "Developer"
+    "name": "yiicod/yii2-socketio",
+    "description": "The simple and powerful socketio for the Yii2 framework",
+    "type": "yii2-extension",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alexey Orlov",
+            "email": "aaorlov88@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*",
+        "yiicod/yii2-cron": "1.*",
+        "yiicod/yii2-base": "*",
+        "symfony/process": "~2.3|~3.0",
+        "predis/predis": "~1.1.0"
+    },
+    "require": {
+        "yiisoft/yii2": "~2.0.8",
+        "liyunfang/yii2-widget-linkpager": "*"
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "yiicod\\socketio\\": "/"
+        }
     }
-  ],
-  "require": {
-    "yiisoft/yii2": "2.*",
-    "yiicod/yii2-cron": "1.*",
-    "yiicod/yii2-base": "1.*",
-    "symfony/process": "~3.0|~4.0",
-    "predis/predis": "~1.1.0"
-  },
-  "require-dev": {
-    "friendsofphp/php-cs-fixer": "~2.1"
-  },
-  "repositories": [
-    {
-      "type": "composer",
-      "url": "https://asset-packagist.org"
-    }
-  ],
-  "autoload": {
-    "psr-4": {
-      "yiicod\\socketio\\": "/"
-    }
-  }
 }
