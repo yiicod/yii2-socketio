@@ -89,7 +89,8 @@ trait CommandTrait
             // to push messages to the channels. Examples:
             //   ./redis-cli PUBLISH notifications "this is a test"
             //   ./redis-cli PUBLISH control_channel quit_loop
-            foreach ($pubsub as $message) {
+			/** @var object $message */
+			foreach ($pubsub as $message) {
                 switch ($message->kind) {
                     case 'subscribe':
                         $this->output("Subscribed to {$message->channel}\n");
@@ -105,6 +106,7 @@ trait CommandTrait
                         } else {
                             $payload = Json::decode($message->payload);
                             $data = $payload['data'] ?? [];
+							$id = $payload['id'] ?? '';
 
 //                            $pid = pcntl_fork();
 //                            if ($pid == -1) {
@@ -117,7 +119,7 @@ trait CommandTrait
 //                                    //put job back to queue or other stuff
 //                                }
 //                            }else {
-                            Broadcast::on($payload['name'], $data);
+                            Broadcast::on($payload['name'], $data, $id);
 //                                Yii::$app->end();
 //                            }
                             // Received the following message from {$message->channel}:") {$message->payload}";

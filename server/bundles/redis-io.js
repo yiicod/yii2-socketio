@@ -73,7 +73,8 @@ class RedisIO {
                             data.room = socket.roomIO.name();
                             this.pub.publish(channel + '.io', JSON.stringify({
                                 name: name,
-                                data: data
+                                data: data,
+                                id: socket.id
                             }));
                     }
                 }else{
@@ -91,13 +92,19 @@ class RedisIO {
     emit(channel, data) {
         let event = this.parseEvent(data),
             room = event.data.room,
+            id = event.data.id,
             nsp = this.getIoNsp(channel);
 
         if (room) {
             delete event.data.room;
             this.io.of('/' + nsp).to(room).emit(event.name, event.data);
         } else {
-            this.io.of('/' + nsp).emit(event.name, event.data);
+            if (id && id in this.io.sockets.connected) {
+                delete event.data.id;
+                this.io.sockets.connected[id].emit(event.name, event.data);
+            } else if (!id) {
+                this.io.of('/' + nsp).emit(event.name, event.data);
+            }
         }
     };
 

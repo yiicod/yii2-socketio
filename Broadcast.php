@@ -4,6 +4,8 @@ namespace yiicod\socketio;
 
 use Exception;
 use Yii;
+use yii\base\InvalidConfigException;
+use yii\di\NotInstantiableException;
 use yii\helpers\ArrayHelper;
 use yii\helpers\HtmlPurifier;
 use yii\helpers\Json;
@@ -23,15 +25,17 @@ class Broadcast
 {
     protected static $channels = [];
 
-    /**
-     * Subscribe to event from client
-     *
-     * @param string $event
-     * @param array $data
-     *
-     * @throws Exception
-     */
-    public static function on(string $event, array $data)
+	/**
+	 * Subscribe to event from client
+	 *
+	 * @param string $event
+	 * @param array $data
+	 * @param string $id
+	 *
+	 * @throws InvalidConfigException
+	 * @throws NotInstantiableException
+	 */
+    public static function on(string $event, array $data, string $id)
     {
         // Clear data
         array_walk_recursive($data, function (&$item, $key) {
@@ -42,6 +46,7 @@ class Broadcast
             'type' => 'on',
             'name' => $event,
             'data' => $data,
+            'id' => $id,
         ]), 'socket.io');
 
         $eventClassName = self::getManager()->getList()[$event] ?? null;
@@ -49,16 +54,17 @@ class Broadcast
             Yii::error(LoggerMessage::trace("Can not find $event", Json::encode($data)));
         }
 
-        Yii::$container->get(Process::class)->run($eventClassName, $data);
+        Yii::$container->get(Process::class)->run($eventClassName, $data, $id);
     }
 
-    /**
-     * Handle process from client
-     *
-     * @param string $handler
-     * @param array $data
-     */
-    public static function process(string $handler, array $data)
+	/**
+	 * Handle process from client
+	 *
+	 * @param string $handler
+	 * @param array $data
+	 * @param string $id
+	 */
+    public static function process(string $handler, array $data, string $id)
     {
         try {
             /** @var EventSubInterface|EventPolicyInterface $event */
@@ -71,25 +77,25 @@ class Broadcast
             Yii::$app->db->close();
             Yii::$app->db->open();
 
-            if (true === $event instanceof EventPolicyInterface && false === $event->can($data)) {
+            if (true === $event instanceof EventPolicyInterface && false === $event->can($data, $id)) {
                 return;
             }
 
-            $event->handle($data);
+            $event->handle($data, $id);
         } catch (Exception $e) {
             Yii::error(LoggerMessage::log($e, Json::encode($data)));
         }
     }
 
-    /**
-     * Emit event to client
-     *
-     * @param string $event
-     * @param array $data
-     *
-     * @throws Exception
-     */
-    public static function emit(string $event, array $data)
+	/**
+	 * Emit event to client
+	 *
+	 * @param string $event
+	 * @param array $data
+	 *
+	 * @param string|null $id
+	 */
+    public static function emit(string $event, array $data, string $id = null)
     {
         $eventClassName = self::getManager()->getList()[$event] ?? null;
         try {
@@ -108,7 +114,11 @@ class Broadcast
 
             if (true === $event instanceof EventRoomInterface) {
                 $data['room'] = $event->room();
-            }
+            } else {
+				if ($id) {
+					$data['id'] = $id;
+				}
+			}
 
             Yii::info(Json::encode([
                 'type' => 'emit',

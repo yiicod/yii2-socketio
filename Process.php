@@ -2,6 +2,7 @@
 
 namespace yiicod\socketio;
 
+use Symfony\Component\Process\Process as SymfonyProcess;
 use Yii;
 use yii\helpers\HtmlPurifier;
 
@@ -36,15 +37,16 @@ class Process
         return getenv('SOCKET_IO.PARALLEL') ? getenv('SOCKET_IO.PARALLEL') : 10;
     }
 
-    /**
-     * Run process. If more then limit then wait and try run process on more time.
-     *
-     * @param string $handle
-     * @param array $data
-     *
-     * @return \Symfony\Component\Process\Process
-     */
-    public function run(string $handle, array $data)
+	/**
+	 * Run process. If more then limit then wait and try run process on more time.
+	 *
+	 * @param string $handle
+	 * @param array $data
+	 * @param string $id
+	 *
+	 * @return SymfonyProcess
+	 */
+    public function run(string $handle, array $data, string $id)
     {
         $this->inWork();
 
@@ -54,7 +56,7 @@ class Process
             $this->inWork();
         }
 
-        return $this->push($handle, $data);
+        return $this->push($handle, $data, $id);
     }
 
     /**
@@ -69,17 +71,18 @@ class Process
         }
     }
 
-    /**
-     * Create cmd process and push to queue.
-     *
-     * @param string $handle
-     * @param array $data
-     *
-     * @return \Symfony\Component\Process\Process
-     */
-    private function push(string $handle, array $data): \Symfony\Component\Process\Process
+	/**
+	 * Create cmd process and push to queue.
+	 *
+	 * @param string $handle
+	 * @param array $data
+	 * @param string $id
+	 *
+	 * @return SymfonyProcess
+	 */
+    private function push(string $handle, array $data, string $id): SymfonyProcess
     {
-        $cmd = HtmlPurifier::process(sprintf('php yii socketio/process %s %s', escapeshellarg($handle), escapeshellarg(json_encode($data))));
+        $cmd = HtmlPurifier::process(sprintf('php yii socketio/process %s %s %s', escapeshellarg($handle), escapeshellarg(json_encode($data)), escapeshellarg($id)));
 
         if (is_null($this->yiiAlias)) {
             if (file_exists(Yii::getAlias('@app/yii'))) {
@@ -89,7 +92,7 @@ class Process
             }
         }
 
-        $process = new \Symfony\Component\Process\Process($cmd, Yii::getAlias($this->yiiAlias));
+        $process = new SymfonyProcess($cmd, Yii::getAlias($this->yiiAlias));
         $process->setTimeout(10);
         $process->start();
 

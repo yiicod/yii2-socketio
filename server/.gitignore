@@ -1,3 +1,4 @@
 node_modules
 exceptions.log
 all-logs.log
+/package-lock.json
