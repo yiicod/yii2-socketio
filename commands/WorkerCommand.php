@@ -56,6 +56,7 @@
 
 namespace yiicod\socketio\commands;
 
+use Exception;
 use yii\console\Controller;
 
 /**
@@ -80,7 +81,7 @@ class WorkerCommand extends Controller
     /**
      * Node js listener.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function actionNodeJsServer()
     {
@@ -93,7 +94,7 @@ class WorkerCommand extends Controller
     /**
      * Php listener
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function actionPhpServer()
     {
@@ -102,9 +103,10 @@ class WorkerCommand extends Controller
         }
     }
 
-    /**
-     * @return FileOutput
-     */
+	/**
+	 * @param $text
+	 * @return void
+	 */
     protected function output($text)
     {
         $this->stdout($text);

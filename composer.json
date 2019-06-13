@@ -1,5 +1,5 @@
 {
-  "name": "yiicod/yii2-socketio",
+  "name": "arkotik/yii2-socketio",
   "description": "The simple and powerful socketio for the Yii2 framework",
   "type": "yii2-extension",
   "license": "MIT",
@@ -7,6 +7,11 @@
     {
       "name": "Alexey Orlov",
       "email": "aaorlov88@gmail.com",
+      "role": "Developer"
+    },
+    {
+      "name": "Arkotik",
+      "email": "arkotik@protonmail.com",
       "role": "Developer"
     }
   ],

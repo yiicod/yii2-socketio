@@ -4,8 +4,12 @@ namespace yiicod\socketio;
 
 use Yii;
 use yii\base\Component;
-use yii\helpers\Json;
+//use yii\helpers\Json;
 
+/**
+ *
+ * @property array $list
+ */
 class EventManager extends Component
 {
     /**
