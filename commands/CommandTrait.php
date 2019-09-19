@@ -25,13 +25,16 @@ trait CommandTrait
      * @var array
      */
     public $ssl = [];
-
-    /**
-     * Process job by id and connection
-     */
-    public function actionProcess($handler, $data)
+	
+	/**
+	 * Process job by id and connection
+	 * @param $handler
+	 * @param $data
+	 * @param $id
+	 */
+    public function actionProcess($handler, $data, $id)
     {
-        Broadcast::process($handler, @json_decode($data, true) ?? []);
+        Broadcast::process($handler, @json_decode($data, true) ?? [], $id);
     }
 
     public function nodejs()
