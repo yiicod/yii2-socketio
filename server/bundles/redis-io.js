@@ -108,6 +108,14 @@ class RedisIO {
         }
     };
 
+    close(channel, data) {
+        let event = this.parseEvent(data),
+          id = event.data.id;
+        if (id && id in this.io.sockets.connected) {
+            this.io.sockets.connected[id].disconnect(true);
+        }
+    }
+
     /**
      * List redis/socket.io
      */
@@ -120,6 +128,8 @@ class RedisIO {
         this.sub.on("message", (channel, data) => {
             this.emit(channel, data);
         });
+
+        this.sub.on("close", this.close);
     }
 
 }

@@ -51,7 +51,7 @@ class Broadcast
 
         $eventClassName = self::getManager()->getList()[$event] ?? null;
         if (null === $eventClassName) {
-            Yii::error(LoggerMessage::trace("Can not find $event", Json::encode($data)));
+            Yii::error(LoggerMessage::trace("Can not find $event", [Json::encode($data)]));
         }
 
         Yii::$container->get(Process::class)->run($eventClassName, $data, $id);
@@ -134,6 +134,26 @@ class Broadcast
         } catch (Exception $e) {
             Yii::error(LoggerMessage::log($e));
         }
+    }
+	
+	/**
+	 * @param string $event
+	 * @param string $id
+	 * @throws Exception
+	 */
+	public static function closeConnection(string $event, string $id)
+	{
+		$eventClassName = self::getManager()->getList()[$event] ?? null;
+		if (null === $eventClassName) {
+			throw new Exception("Can not find $event");
+		}
+		foreach ($eventClassName::broadcastOn() as $channel) {
+			static::publish(static::channelName($channel), [
+				'name' => 'close',
+				'data' => compact('id'),
+			]);
+		}
+		
     }
 
     /**
