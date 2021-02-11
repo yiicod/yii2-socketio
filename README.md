@@ -13,7 +13,7 @@ Config
     cd ~
     curl -sL https://deb.nodesource.com/setup_6.x -o nodesource_setup.sh
     sudo bash nodesource_setup.sh
-    cd vendor/yiicod/yii2-soketio/server
+    cd vendor/yiicod/yii2-socketio/server
     npm install
 ```
 
