@@ -281,7 +281,7 @@ Soket.io has room functionl. If you need it, you should implement:
          */
         public function room(): string
         {
-            return 'user_id_' . $this->>userId;
+            return 'user_id_' . $this->userId;
         }            
             
         /**
