@@ -1,12 +1,12 @@
 <?php
 
-namespace yiicod\socketio\events;
+namespace hyperia\socketio\events;
 
 /**
  * Interface EventSubInterface
  * Event subscriber interface
  *
- * @package yiicod\socketio\events
+ * @package hyperia\socketio\events
  */
 interface EventSubInterface
 {

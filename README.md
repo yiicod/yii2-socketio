@@ -3,8 +3,6 @@ Socket.io Yii extension
 
 Use all power of socket.io in your Yii 2 project.
 
-[![Latest Stable Version](https://poser.pugx.org/yiicod/yii2-socketio/v/stable)](https://packagist.org/packages/yiicod/yii2-socketio) [![Total Downloads](https://poser.pugx.org/yiicod/yii2-socketio/downloads)](https://packagist.org/packages/yiicod/yii2-socketio) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/yiicod/yii2-socketio/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/yiicod/yii2-socketio/?branch=master)[![Code Climate](https://codeclimate.com/github/yiicod/yii2-socketio/badges/gpa.svg)](https://codeclimate.com/github/yiicod/yii2-socketio)
-
 Config
 ------
 
@@ -13,7 +11,7 @@ Config
     cd ~
     curl -sL https://deb.nodesource.com/setup_6.x -o nodesource_setup.sh
     sudo bash nodesource_setup.sh
-    cd vendor/yiicod/yii2-soketio/server
+    cd vendor/hyperia/yii2-soketio/server
     npm install
 ```
 
@@ -21,7 +19,7 @@ Config
 ```php
     'controllerMap' => [
         'socketio' => [
-            'class' => \yiicod\socketio\commands\SocketIoCommand::class,
+            'class' => \hyperia\socketio\commands\SocketIoCommand::class,
             'server' => 'localhost:1367'
         ],
     ]       
@@ -38,7 +36,7 @@ Config
 ```php
     'controllerMap' => [
         'socketio' => [
-            'class' => \yiicod\socketio\commands\WorkerCommand::class,
+            'class' => \hyperia\socketio\commands\WorkerCommand::class,
             'server' => 'localhost:1367'
         ],
     ]
@@ -92,7 +90,7 @@ pm2 start daemons-app.json
 ```php
     'components' =>[
         'broadcastEvents' => [
-            'class' => \yiicod\socketio\EventManager::class,
+            'class' => \hyperia\socketio\EventManager::class,
             'nsp' => 'some_unique_key',
             // Namespaces with events folders
             'namespaces' => [
@@ -100,7 +98,7 @@ pm2 start daemons-app.json
             ]
         ],
         'broadcastDriver' => [
-            'class' => \yiicod\socketio\drivers\RedisDriver::class,
+            'class' => \hyperia\socketio\drivers\RedisDriver::class,
             'hostname' => 'localhost',
             'port' => 6379,
         ],    
@@ -109,8 +107,8 @@ pm2 start daemons-app.json
 
 ##### Create publisher from server to client
 ```php
-    use yiicod\socketio\events\EventInterface;
-    use yiicod\socketio\events\EventPubInterface;
+    use hyperia\socketio\events\EventInterface;
+    use hyperia\socketio\events\EventPubInterface;
     
     class CountEvent implements EventInterface, EventPubInterface
     {
@@ -149,14 +147,14 @@ pm2 start daemons-app.json
 ```
 ```php
     //Run broadcast to client
-    \yiicod\socketio\Broadcast::emit(CountEvent::name(), ['count' => 10])
+    \hyperia\socketio\Broadcast::emit(CountEvent::name(), ['count' => 10])
 
 ```
 
 ##### Create receiver from client to server
 ```php
-    use yiicod\socketio\events\EventInterface;
-    use yiicod\socketio\events\EventSubInterface;
+    use hyperia\socketio\events\EventInterface;
+    use hyperia\socketio\events\EventSubInterface;
     
     class MarkAsReadEvent implements EventInterface, EventSubInterface
     {
@@ -202,9 +200,9 @@ You can have publisher and receiver in one event. If you need check data from cl
 
 ##### Receiver with checking from client to server
 ```php
-    use yiicod\socketio\events\EventSubInterface;
-    use yiicod\socketio\events\EventInterface;
-    use yiicod\socketio\events\EventPolicyInterface;
+    use hyperia\socketio\events\EventSubInterface;
+    use hyperia\socketio\events\EventInterface;
+    use hyperia\socketio\events\EventPolicyInterface;
     
     class MarkAsReadEvent implements EventInterface, EventSubInterface, EventPolicyInterface
     {
@@ -247,9 +245,9 @@ You can have publisher and receiver in one event. If you need check data from cl
 Soket.io has room functionl. If you need it, you should implement:
 - EventRoomInterface
 ```php
-    use yiicod\socketio\events\EventPubInterface;
-    use yiicod\socketio\events\EventInterface;
-    use yiicod\socketio\events\EventRoomInterface;
+    use hyperia\socketio\events\EventPubInterface;
+    use hyperia\socketio\events\EventInterface;
+    use hyperia\socketio\events\EventRoomInterface;
     
     class CountEvent implements EventInterface, EventPubInterface, EventRoomInterface
     {
@@ -310,6 +308,6 @@ Soket.io has room functionl. If you need it, you should implement:
 ```
 ```php
     //Run broadcast to user id = 10 
-    \yiicod\socketio\Broadcast::emit(CountEvent::name(), ['count' => 10, 'userId' => 10])
+    \hyperia\socketio\Broadcast::emit(CountEvent::name(), ['count' => 10, 'userId' => 10])
 
 ```

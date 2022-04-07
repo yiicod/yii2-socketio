@@ -1,12 +1,12 @@
 <?php
 
-namespace yiicod\socketio\events;
+namespace hyperia\socketio\events;
 
 /**
  * Interface EventInterface
  * Event name and broadcast nsp
  *
- * @package yiicod\socketio\events
+ * @package hyperia\socketio\events
  */
 interface EventInterface
 {

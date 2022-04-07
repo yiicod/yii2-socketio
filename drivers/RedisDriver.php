@@ -1,6 +1,6 @@
 <?php
 
-namespace yiicod\socketio\drivers;
+namespace hyperia\socketio\drivers;
 
 use yii\helpers\ArrayHelper;
 
@@ -9,7 +9,7 @@ use yii\helpers\ArrayHelper;
  *
  * Class RedisDriver
  *
- * @package yiicod\socketio\drivers
+ * @package hyperia\socketio\drivers
  */
 class RedisDriver
 {
