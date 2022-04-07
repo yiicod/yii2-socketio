@@ -1,13 +1,13 @@
 <?php
 
-namespace yiicod\socketio\commands;
+namespace hyperia\socketio\commands;
 
 use Symfony\Component\Process\Process;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Console;
 use yii\helpers\Json;
-use yiicod\socketio\Broadcast;
+use hyperia\socketio\Broadcast;
 
 trait CommandTrait
 {

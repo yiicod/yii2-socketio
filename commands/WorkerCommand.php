@@ -1,6 +1,6 @@
 <?php
 
-//namespace yiicod\socketio\commands;
+//namespace hyperia\socketio\commands;
 //
 //use yii\console\Controller;
 //
@@ -8,7 +8,7 @@
 // * Class SocketIoCommand
 // * Run this daemon for listen socketio. Don't forget about run npm install in the folder "server".
 // *
-// * @package yiicod\socketio\commands
+// * @package hyperia\socketio\commands
 // */
 //class WorkerCommand extends Controller
 //{
@@ -54,14 +54,14 @@
 //    }
 //}
 
-namespace yiicod\socketio\commands;
+namespace hyperia\socketio\commands;
 
 use yii\console\Controller;
 
 /**
  * Socketio server. You should run two commands: "socketio/node-js-server" and "socketio/php-server". Use pm2 as daemon manager.
  *
- * @package yiicod\socketio\commands
+ * @package hyperia\socketio\commands
  */
 class WorkerCommand extends Controller
 {

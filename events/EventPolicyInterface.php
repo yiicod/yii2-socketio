@@ -1,6 +1,6 @@
 <?php
 
-namespace yiicod\socketio\events;
+namespace hyperia\socketio\events;
 
 interface EventPolicyInterface
 {

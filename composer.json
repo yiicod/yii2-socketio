@@ -1,5 +1,5 @@
 {
-  "name": "yiicod/yii2-socketio",
+  "name": "hyperia/yii2-socketio",
   "description": "The simple and powerful socketio for the Yii2 framework",
   "type": "yii2-extension",
   "license": "MIT",
@@ -12,7 +12,7 @@
   ],
   "require": {
     "yiisoft/yii2": "2.*",
-    "yiicod/yii2-cron": "1.*",
+    "hyperia/yii2-cron": "1.*",
     "yiicod/yii2-base": "1.*",
     "symfony/process": "~3.0|~4.0",
     "predis/predis": "~1.1.0"
@@ -28,7 +28,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "yiicod\\socketio\\": "/"
+      "hyperia\\socketio\\": ""
     }
   }
 }
