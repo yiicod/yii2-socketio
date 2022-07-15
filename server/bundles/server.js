@@ -8,6 +8,12 @@ const dotenv = require('dotenv').config();
 const server = args.ssl ? https.createServer({
     key: fs.readFileSync(ssl.key),
     cert: fs.readFileSync(ssl.cert)
-}) : http.createServer();
+}, (req, res) => {
+    res.writeHead(404);
+    res.end('');
+}) : http.createServer((req, res) => {
+    res.writeHead(404);
+    res.end('');
+});
 
 module.exports = server;
