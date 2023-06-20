@@ -54,7 +54,7 @@ trait CommandTrait
             ])),
             'channels' => implode(',', Broadcast::channels()),
             'nsp' => Broadcast::getManager()->nsp,
-            'ssl' => empty($this->ssl) ? null : json_encode($this->ssl),
+            'ssl' => empty($this->ssl) ? '' : json_encode($this->ssl),
             'runtime' => Yii::getAlias('@runtime/logs'),
         ], 'strlen');
         foreach ($args as $key => $value) {
