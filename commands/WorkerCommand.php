@@ -56,6 +56,7 @@
 
 namespace hyperia\socketio\commands;
 
+use Symfony\Component\Process\Process;
 use yii\console\Controller;
 
 /**
@@ -87,7 +88,13 @@ class WorkerCommand extends Controller
         $process = $this->nodejs();
         $process->setTimeout(null);
         $process->setIdleTimeout(null);
-        $process->run();
+        $process->run(function ($type, $buffer) {
+            if (Process::ERR === $type) {
+                echo 'ERR > '.$buffer;
+            } else {
+                echo 'OUT > '.$buffer;
+            }
+        });
     }
 
     /**

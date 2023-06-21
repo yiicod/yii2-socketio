@@ -71,6 +71,7 @@ class RedisIO {
                             break;
                         default:
                             data.room = socket.roomIO.name();
+                            console.log(new Date(), 'Msg name: ' + name, 'Msg data:' + JSON.stringify(data));
                             this.pub.publish(channel + '.io', JSON.stringify({
                                 name: name,
                                 data: data

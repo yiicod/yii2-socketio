@@ -30,5 +30,10 @@
     "psr-4": {
       "hyperia\\socketio\\": ""
     }
+  },
+  "config": {
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true
+    }
   }
 }
